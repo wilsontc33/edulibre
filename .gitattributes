@@ -1,0 +1,27 @@
+# Normalización de finales de línea
+* text=auto eol=lf
+
+# Scripts POSIX / wrappers Gradle siempre en LF
+*.sh    text eol=lf
+gradlew text eol=lf
+
+# Scripts de Windows conservan CRLF
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Binarios: nunca normalizar
+*.jar   binary
+*.class binary
+*.ico   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.eot   binary
+*.pdf   binary
+*.zip   binary

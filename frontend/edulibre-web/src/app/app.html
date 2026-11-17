@@ -1,0 +1,10 @@
+<!-- El Header fijo -->
+<app-header></app-header>
+
+<!-- El Modal (estará oculto hasta que se haga clic) -->
+<app-auth-modal></app-auth-modal>
+
+<!-- Aquí se cargarán las páginas (Landing, Admin, etc.) -->
+<main class="pt-20"> <!-- pt-20 para que no quede debajo del header fijo -->
+  <router-outlet></router-outlet>
+</main>

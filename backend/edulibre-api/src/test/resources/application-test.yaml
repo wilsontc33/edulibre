@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:edulibre;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+jwt:
+  secret: test-secret-key-123456789012345678901234567890
+  expiration: 3600000
+
+app:
+  cors:
+    allowed-origins: http://localhost:4200

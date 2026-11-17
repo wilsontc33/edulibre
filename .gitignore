@@ -1,0 +1,35 @@
+# Java / Maven
+
+backend/target/
+
+
+# Maven Wrapper
+
+
+
+# Node / React / Vite
+
+# Ignorar dependencias de Node
+frontend/edulibre-web/node_modules/
+frontend/edulibre-web/.angular/
+
+# Entorno / secretos
+
+.env
+.env.*
+!.env.example
+secrets/
+
+# Docker local override
+docker-compose.override.yml
+
+# IntelliJ IDEA
+
+.idea/
+*.iml
+out/
+
+
+# VS Code
+
+.vscode/

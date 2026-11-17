@@ -1,0 +1,77 @@
+<div class="max-w-6xl mx-auto py-10 px-4">
+
+  <!-- Encabezado -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-primary">Mis Postulaciones</h1>
+    <p class="text-gray-600 mt-2">Revisa el estado de tus solicitudes de admisión y accede a tus cursos aprobados.</p>
+  </div>
+
+  @if (error()) {
+    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p class="text-sm text-gray-500 mb-4">Cargando tus postulaciones...</p>
+  }
+
+  <!-- Lista de Postulaciones -->
+  <div class="space-y-6">
+
+    @for (postulacion of postulaciones(); track postulacion.id) {
+
+    <div class="bg-white rounded-xl shadow-sm border-l-4 overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center p-6 gap-4"
+         [ngClass]="{
+             'border-secondary': postulacion.estado === 'APROBADA',
+             'border-yellow-400': postulacion.estado === 'PENDIENTE',
+             'border-error': postulacion.estado === 'RECHAZADA'
+           }">
+
+      <!-- Detalles del Curso -->
+      <div class="flex-1">
+        <div class="flex items-center gap-2 mb-2">
+          <!-- Badge de Estado -->
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider"
+                [ngClass]="{
+                    'bg-secondary-container text-on-secondary-container': postulacion.estado === 'APROBADA',
+                    'bg-yellow-100 text-yellow-800': postulacion.estado === 'PENDIENTE',
+                    'bg-error-container text-on-error-container': postulacion.estado === 'RECHAZADA'
+                  }">
+              {{ postulacion.estado }}
+            </span>
+          <span class="text-sm text-gray-500">· {{ postulacion.fecha }}</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-primary">{{ postulacion.curso }}</h2>
+
+        @if (postulacion.estado === 'RECHAZADA') {
+        <p class="text-sm text-red-600 mt-2">
+          <strong>Motivo:</strong> {{ postulacion.motivoRechazo }}
+        </p>
+        }
+
+        @if (postulacion.estado === 'PENDIENTE') {
+        <p class="text-sm text-gray-500 mt-2">
+          En revisión por el equipo académico. Tiempo estimado: 48 horas.
+        </p>
+        }
+      </div>
+
+      <!-- Botón de Acción -->
+      <div class="mt-4 md:mt-0">
+        @if (postulacion.estado === 'APROBADA') {
+        <a [routerLink]="['/curso', postulacion.cursoId]" class="bg-primary hover:bg-primary-container text-white px-6 py-2.5 rounded-lg font-semibold transition-all flex items-center gap-2">
+          <span>Ir al curso</span>
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </a>
+        }
+      </div>
+    </div>
+    } @empty {
+      @if (!cargando()) {
+        <div class="rounded-xl border border-gray-200 bg-white px-6 py-10 text-center text-gray-500">
+          Aún no tienes postulaciones registradas.
+        </div>
+      }
+    }
+  </div>
+</div>

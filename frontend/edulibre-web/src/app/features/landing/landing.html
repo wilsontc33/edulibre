@@ -1,0 +1,201 @@
+<div class="flex flex-col w-full relative font-body text-on-surface">
+
+  <!-- HERO SECTION -->
+  <section class="max-w-7xl mx-auto px-8 pt-10 pb-8 lg:pb-10 w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <div class="lg:col-span-7 space-y-4 z-10">
+        <div class="inline-flex items-center gap-1 bg-white px-4 py-1 rounded-full shadow-sm text-[#006a61]">
+          <span class="material-symbols-outlined text-[18px]">verified_user</span>
+          <span class="text-[11px] tracking-wide text-gray-900 uppercase font-bold">Convocatoria Abierta • 100% Gratuito</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl text-primary tracking-tight font-bold">
+          Aprende gratis las habilidades del futuro
+        </h1>
+        <p class="text-lg text-gray-600 max-w-[600px] leading-relaxed">
+          Accede a cursos certificados sin costo. Postula en 2 minutos completando tus datos e intereses; revisaremos tu perfil y recibirás la respuesta de admisión directamente en tu correo.
+        </p>
+        <div class="flex flex-wrap items-center gap-4 pt-2">
+          <a class="inline-flex items-center justify-center gap-1 bg-primary hover:bg-[#1e2260] text-white font-semibold px-6 py-3 rounded-lg shadow-sm transition-all" href="#cursos-destacados">
+            <span class="material-symbols-outlined text-[20px]">school</span>
+            <span>Explorar Cursos</span>
+          </a>
+          <a class="inline-flex items-center justify-center gap-1 bg-secondary hover:bg-[#005049] text-white font-semibold px-6 py-3 rounded-lg shadow-sm transition-all" href="#formulario-inscripcion">
+            <span>Inscribirme Gratis</span>
+            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+      <div class="lg:col-span-5 relative mt-4 lg:mt-0">
+        <div class="relative z-10 bg-white p-4 rounded-2xl shadow-xl">
+          <div class="relative overflow-hidden rounded-xl h-80 sm:h-96">
+            <img class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800" alt="Estudiante aprendiendo" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CÓMO FUNCIONA -->
+  <section class="w-full bg-[#f2f4f6] py-16" id="como-funciona">
+    <div class="max-w-7xl mx-auto px-8 space-y-10">
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <span class="text-[11px] uppercase tracking-wider text-[#006a61] font-bold">Proceso Ágil & Transparente</span>
+        <h2 class="text-3xl font-bold text-primary">¿Cómo funciona la postulación?</h2>
+        <p class="text-gray-600">Tres pasos claros para desbloquear tu formación profesional en tecnología y diseño.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+        <div class="bg-white p-6 rounded-2xl shadow-sm hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-xl text-primary mb-4 font-bold">01</div>
+          <h3 class="text-xl text-gray-900 mb-2 font-semibold">Elige tu curso</h3>
+          <p class="text-gray-600 text-sm">Revisa nuestro catálogo de programas tecnológicos diseñados con líderes del ecosistema digital.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-full bg-[#86f2e4] flex items-center justify-center text-xl text-[#006f66] mb-4 font-bold">02</div>
+          <h3 class="text-xl text-gray-900 mb-2 font-semibold">Llena el formulario</h3>
+          <p class="text-gray-600 text-sm">Indica en menos de 2 minutos tus motivaciones, conocimientos previos y tu correo donde notificaremos el resultado.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-full bg-[#e0e0ff] flex items-center justify-center text-xl text-[#0e1252] mb-4 font-bold">03</div>
+          <h3 class="text-xl text-gray-900 mb-2 font-semibold">Recibe tu acceso por correo</h3>
+          <p class="text-gray-600 text-sm">Recibirás la confirmación de tu inscripción gratuita y las credenciales de entrada al campus virtual.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATÁLOGO -->
+  <section class="max-w-7xl mx-auto px-8 py-16 space-y-6 w-full" id="cursos-destacados">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="space-y-1">
+        <span class="text-[11px] uppercase tracking-wider text-[#006a61] font-bold">Oferta Académica Vigente</span>
+        <h2 class="text-3xl font-bold text-primary">Cursos disponibles con inscripción gratuita</h2>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-2">
+      <button
+        *ngFor="let cat of categoriasConTodas()"
+        (click)="filtrarPorSlug(cat.slug)"
+        [ngClass]="cat.slug === categoriaSeleccionada() ? 'bg-primary text-white shadow-sm' : 'bg-white text-gray-600 hover:text-gray-900 shadow-sm'"
+        class="px-4 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap">
+        {{ cat.nombre }}
+      </button>
+    </div>
+
+    @if (cargandoCursos()) {
+      <p class="text-sm text-gray-500">Cargando cursos...</p>
+    }
+
+    <!-- Grid de Cursos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let curso of cursos()" class="bg-white rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-xl transition-all duration-300">
+        <div>
+          <div class="relative h-44 overflow-hidden">
+            <img class="w-full h-full object-cover" [src]="curso.imagenUrl ?? ''" [alt]="curso.titulo" />
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-[#006a61] text-white px-2 py-0.5 rounded-full text-[11px] font-semibold">Curso Gratuito</span>
+            </div>
+          </div>
+          <div class="p-6 space-y-3">
+            <div class="flex items-center justify-between text-gray-500 text-[13px]">
+              <span class="bg-gray-100 px-2 py-0.5 rounded text-gray-700 font-medium">{{ curso.categoria }}</span>
+            </div>
+            <h3 class="text-xl font-bold text-primary">{{ curso.titulo }}</h3>
+            <p class="text-sm text-gray-600 line-clamp-2">{{ curso.descripcion }}</p>
+          </div>
+        </div>
+        <div class="p-6 pt-0">
+          <button (click)="seleccionarCurso(curso.id)" class="w-full inline-flex items-center justify-center gap-1 bg-gray-100 hover:bg-[#86f2e4] hover:text-[#006f66] text-primary font-semibold text-sm py-2.5 rounded-lg transition-colors">
+            <span>Inscribirme al Curso</span>
+            <span class="material-symbols-outlined text-[18px]">edit_note</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMULARIO -->
+  <section class="w-full bg-[#f2f4f6] py-16" id="formulario-inscripcion">
+    <div class="max-w-4xl mx-auto px-8">
+      <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-xl border-t-4 border-[#006a61]">
+
+        <div class="space-y-2 mb-8 text-center">
+          <span class="text-[11px] uppercase tracking-wider text-[#006a61] font-bold">Inscripción Gratuita 2024</span>
+          <h2 class="text-3xl font-bold text-primary">Postula a tu curso gratuito</h2>
+          <p class="text-gray-600 max-w-[500px] mx-auto text-sm leading-relaxed">Completa tus datos con precisión. Asignamos mentores y habilitamos las cuentas del campus en base al perfil recibido.</p>
+        </div>
+
+        <!-- Éxito -->
+        <div *ngIf="mostrarExito()" class="mb-6 p-6 rounded-2xl bg-[#86f2e4] text-[#006f66] text-center animate-fade-in">
+          <span class="material-symbols-outlined text-[32px] mb-2">mark_email_read</span>
+          <h3 class="text-xl font-bold mb-1">¡Solicitud recibida con éxito!</h3>
+          <p class="text-sm">Hemos registrado tu perfil. Recibirás la confirmación en menos de 48 horas.</p>
+        </div>
+
+        @if (error()) {
+          <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {{ error() }}
+          </div>
+        }
+
+        @if (!authService.isLoggedIn()) {
+          <div class="mb-6 flex items-center gap-2 rounded-2xl bg-blue-50 px-4 py-3 text-sm text-blue-800">
+            <span class="material-symbols-outlined text-[18px]">info</span>
+            <span>Para enviar tu postulación debes iniciar sesión o crear una cuenta. Te pediremos hacerlo al enviar el formulario.</span>
+          </div>
+        }
+
+        <!-- Formulario Angular -->
+        <form [formGroup]="postulacionForm" (ngSubmit)="enviarPostulacion()" class="space-y-4" *ngIf="!mostrarExito()">
+
+          <div class="space-y-1.5">
+            <label class="block font-semibold text-sm text-gray-900">Curso al que postula <span class="text-red-500">*</span></label>
+            <select formControlName="cursoId" class="w-full bg-[#f2f4f6] px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#006a61]">
+              <option value="" disabled selected>Selecciona tu curso gratuito...</option>
+              <option *ngFor="let c of cursos()" [value]="c.id">{{ c.titulo }}</option>
+            </select>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block font-semibold text-sm text-gray-900">Nombre completo <span class="text-red-500">*</span></label>
+            <input formControlName="nombreCompleto" type="text" [readonly]="authService.isLoggedIn()" placeholder="Ej. Camila Morales" class="w-full bg-[#f2f4f6] px-4 py-3 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#006a61]"/>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block font-semibold text-sm text-gray-900">Correo electrónico <span class="text-red-500">*</span></label>
+            <input formControlName="email" type="email" [readonly]="authService.isLoggedIn()" placeholder="tu.correo@ejemplo.com" class="w-full bg-[#f2f4f6] px-4 py-3 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#006a61]"/>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="space-y-1.5">
+              <label class="block font-semibold text-sm text-gray-900">Nivel previo <span class="text-red-500">*</span></label>
+              <select formControlName="nivelPrevio" class="w-full bg-[#f2f4f6] px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#006a61]">
+                <option value="" disabled selected>Selecciona tu nivel...</option>
+                <option value="Básico">Básico</option>
+                <option value="Intermedio">Intermedio</option>
+                <option value="Avanzado">Avanzado</option>
+              </select>
+            </div>
+            <div class="space-y-1.5">
+              <label class="block font-semibold text-sm text-gray-900">Horas disponibles a la semana <span class="text-red-500">*</span></label>
+              <input formControlName="horasSemana" type="number" min="1" max="80" placeholder="Ej. 10" class="w-full bg-[#f2f4f6] px-4 py-3 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#006a61]"/>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block font-semibold text-sm text-gray-900">Motivación <span class="text-red-500">*</span></label>
+            <textarea formControlName="motivacion" rows="3" placeholder="Explica brevemente por qué te interesa realizar este curso..." class="w-full bg-[#f2f4f6] px-4 py-3 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#006a61] resize-none"></textarea>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" [disabled]="postulacionForm.invalid || cargando()" class="w-full py-4 px-6 rounded-xl bg-primary hover:bg-[#1e2260] disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-bold shadow-md transition-all flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-[20px]">send</span>
+              <span>{{ cargando() ? 'Enviando...' : 'Enviar Postulación' }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>

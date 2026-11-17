@@ -1,0 +1,89 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+
+    <div style="width: 100%; max-width: 560px; background-color: white;" class="relative rounded-2xl shadow-2xl overflow-hidden animate-fade-in">
+
+      <!-- Barra roja superior -->
+      <div class="h-1.5 w-full bg-error"></div>
+
+      <div class="p-6 sm:p-7">
+
+        <!-- Cabecera del modal -->
+        <div class="flex items-start justify-between gap-4 mb-5">
+          <div class="flex items-start gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-error-container text-on-error-container flex items-center justify-center shrink-0 shadow-sm">
+              <span class="material-symbols-outlined text-[24px]">person_cancel</span>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-primary">Rechazar Postulación</h2>
+              <p class="text-sm text-gray-500 mt-1">Esta acción notificará al postulante y liberará el cupo en el curso.</p>
+            </div>
+          </div>
+          <button (click)="cerrar()" class="text-gray-400 hover:text-gray-900 transition-colors">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+
+        <!-- Datos del Estudiante (Caja gris) -->
+        <div class="bg-gray-50 rounded-xl p-4 mb-5">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                {{ estudianteNombre().charAt(0) }}
+              </div>
+              <div>
+                <p class="font-bold text-primary">{{ estudianteNombre() }}</p>
+                <p class="text-xs text-gray-500">{{ cursoNombre() }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="h-[1px] w-full bg-gray-200 my-3"></div>
+          <p class="text-xs text-gray-500 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">school</span>
+            Curso al que postuló: <span class="font-semibold text-gray-800">{{ cursoNombre() }}</span>
+          </p>
+        </div>
+
+        <!-- Área de texto para el motivo -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-sm font-semibold text-gray-900">Motivo del rechazo *</label>
+            <span class="text-xs text-gray-400">{{ motivo().length }} / 500 caracteres</span>
+          </div>
+          <textarea
+            [ngModel]="motivo()"
+            (ngModelChange)="motivo.set($event)"
+            maxlength="500"
+            rows="4"
+            placeholder="Escribe el motivo detallado de la desestimación..."
+            class="w-full bg-gray-50 p-3 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none border border-gray-200">
+            </textarea>
+        </div>
+
+        @if (error()) {
+          <div class="mb-5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {{ error() }}
+          </div>
+        }
+
+        <!-- Nota de envío de correo -->
+        <div class="flex items-center gap-2 p-3 rounded-lg bg-blue-50 text-blue-800 mb-6">
+          <span class="material-symbols-outlined text-[18px]">mark_email_read</span>
+          <p class="text-xs">El postulante recibirá un correo con este mensaje desde <strong>admisiones@edulibre.org</strong>.</p>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex items-center justify-end gap-3">
+          <button (click)="cerrar()" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-all">
+            Cancelar
+          </button>
+          <button (click)="confirmarRechazo()" [disabled]="guardando()" class="px-5 py-2.5 rounded-lg text-sm font-semibold bg-error text-white hover:bg-red-700 disabled:opacity-60 shadow-md transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">person_remove</span>
+            {{ guardando() ? 'Rechazando...' : 'Confirmar Rechazo' }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}
