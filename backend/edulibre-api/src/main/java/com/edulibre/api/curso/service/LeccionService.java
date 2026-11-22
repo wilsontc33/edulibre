@@ -1,14 +1,15 @@
 package com.edulibre.api.curso.service;
 
 import com.edulibre.api.curso.dto.LeccionResponse;
+import com.edulibre.api.curso.entity.Curso;
 import com.edulibre.api.curso.entity.Leccion;
 import com.edulibre.api.curso.repository.CursoRepository;
 import com.edulibre.api.curso.repository.LeccionRepository;
 import com.edulibre.api.inscripcion.repository.InscripcionRepository;
 import com.edulibre.api.security.service.CurrentUserService;
-import com.edulibre.api.shared.exception.ForbiddenException;
 import com.edulibre.api.shared.exception.ResourceNotFoundException;
 import com.edulibre.api.shared.util.EstadoInscripcion;
+import com.edulibre.api.shared.util.Rol;
 import com.edulibre.api.usuario.entity.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,28 +28,34 @@ public class LeccionService {
 
     @Transactional(readOnly = true)
     public List<LeccionResponse> listar(String cursoId) {
-        cursoRepository.findByIdAndPublicadoTrue(cursoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado"));
-
         Usuario usuario = currentUserService.getCurrentUser().orElse(null);
-        boolean autorizado = usuario != null && inscripcionRepository.existsByUsuarioIdAndCursoIdAndEstado(
-                usuario.getId(), cursoId, EstadoInscripcion.APROBADA);
+        boolean esAdmin = usuario != null && usuario.getRol() == Rol.ADMIN;
 
-        if (!autorizado) {
-            throw new ForbiddenException("No tienes una inscripción aprobada en este curso");
+        Curso curso = cursoRepository.findByIdAndPublicadoTrue(cursoId)
+                .orElse(null);
+
+        if (curso == null) {
+            if (!esAdmin) {
+                throw new ResourceNotFoundException("Curso no encontrado");
+            }
+            curso = cursoRepository.findById(cursoId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado"));
         }
 
-        return leccionRepository.findByCursoIdOrderByOrdenAsc(cursoId).stream()
-                .map(this::toResponse)
+        boolean autorizado = esAdmin || (usuario != null && inscripcionRepository.existsByUsuarioIdAndCursoIdAndEstado(
+                usuario.getId(), cursoId, EstadoInscripcion.APROBADA));
+
+        return leccionRepository.findByCursoIdOrderByOrdenAsc(curso.getId()).stream()
+                .map(leccion -> toResponse(leccion, autorizado))
                 .toList();
     }
 
-    private LeccionResponse toResponse(Leccion leccion) {
+    private LeccionResponse toResponse(Leccion leccion, boolean autorizado) {
         return new LeccionResponse(
                 leccion.getId(),
                 leccion.getTitulo(),
                 leccion.getOrden(),
-                leccion.getYoutubeId(),
+                autorizado ? leccion.getYoutubeId() : null,
                 leccion.getDuracionMin(),
                 duracion(leccion.getDuracionMin()));
     }

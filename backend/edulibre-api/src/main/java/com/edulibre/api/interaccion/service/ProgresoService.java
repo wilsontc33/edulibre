@@ -10,6 +10,7 @@ import com.edulibre.api.security.service.CurrentUserService;
 import com.edulibre.api.shared.exception.ForbiddenException;
 import com.edulibre.api.shared.exception.ResourceNotFoundException;
 import com.edulibre.api.shared.util.EstadoInscripcion;
+import com.edulibre.api.shared.util.Rol;
 import com.edulibre.api.usuario.entity.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,9 @@ public class ProgresoService {
     }
 
     private void requireInscripcionAprobada(Usuario usuario, String cursoId) {
+        if (usuario.getRol() == Rol.ADMIN) {
+            return;
+        }
         boolean aprobada = inscripcionRepository.existsByUsuarioIdAndCursoIdAndEstado(
                 usuario.getId(), cursoId, EstadoInscripcion.APROBADA);
         if (!aprobada) {

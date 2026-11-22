@@ -5,11 +5,12 @@ import { ModalRechazo } from '../modal-rechazo/modal-rechazo';
 import { AdminInscripcion, EstadoInscripcion } from '../../../core/models/inscripcion';
 import { AdminInscripcionService } from '../../../core/services/admin-inscripcion';
 import { extraerMensajeError } from '../../../core/interceptors/error.interceptor';
+import { PageHeader } from '../../../shared/page-header/page-header';
 
 @Component({
   selector: 'app-postulaciones-pendientes',
   standalone: true,
-  imports: [CommonModule, ModalRechazo],
+  imports: [CommonModule, ModalRechazo, PageHeader],
   templateUrl: './postulaciones-pendientes.html'
 })
 export class PostulacionesPendientes implements OnInit {

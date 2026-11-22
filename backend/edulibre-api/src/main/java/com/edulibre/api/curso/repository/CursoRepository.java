@@ -17,4 +17,10 @@ public interface CursoRepository extends JpaRepository<Curso, String> {
 
     @EntityGraph(attributePaths = "categoria")
     Optional<Curso> findByIdAndPublicadoTrue(String id);
+
+    @EntityGraph(attributePaths = "categoria")
+    Optional<Curso> findById(String id);
+
+    @EntityGraph(attributePaths = "categoria")
+    List<Curso> findAllByOrderByCreadoEnDesc();
 }

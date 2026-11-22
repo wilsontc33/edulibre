@@ -1,0 +1,75 @@
+<div class="py-10">
+
+  <app-page-header eyebrow="Mis Cursos" titulo="Tus cursos aprobados" subtitulo="Continúa tu aprendizaje donde lo dejaste.">
+    @if (filas().length > 0) {
+      <p class="text-sm text-gray-500">{{ enProgreso() }} en progreso · {{ completados() }} completado{{ completados() === 1 ? '' : 's' }}</p>
+    }
+  </app-page-header>
+
+  @if (error()) {
+    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p class="text-sm text-gray-500">Cargando tus cursos...</p>
+  }
+
+  @if (!cargando() && !error() && filas().length === 0) {
+    <div class="rounded-2xl border border-gray-200 bg-white px-6 py-14 text-center">
+      <span class="material-symbols-outlined text-5xl text-gray-300">school</span>
+      <h2 class="text-xl font-bold text-primary mt-4">Aún no tienes cursos aprobados</h2>
+      <p class="text-sm text-gray-500 mt-2 max-w-[28rem] mx-auto">Postula a un curso del catálogo. Cuando tu solicitud sea aprobada, aparecerá aquí con tu progreso.</p>
+      <a routerLink="/cursos" class="inline-flex items-center gap-2 mt-6 bg-primary hover:bg-primary-container text-white px-6 py-3 rounded-lg font-semibold transition-all">
+        Explorar cursos
+        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+      </a>
+    </div>
+  }
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    @for (fila of filas(); track fila.inscripcion.id) {
+      <div class="group bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col hover:shadow-xl transition-all duration-300">
+        <div class="relative h-36 overflow-hidden bg-surface-container">
+          @if (fila.curso?.imagenUrl) {
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" [src]="fila.curso?.imagenUrl" [alt]="fila.curso?.titulo" />
+          } @else {
+            <div class="w-full h-full flex items-center justify-center bg-primary-container text-white">
+              <span class="material-symbols-outlined text-5xl">school</span>
+            </div>
+          }
+          <div class="absolute top-3 left-3 flex gap-2">
+            <span class="bg-white/90 backdrop-blur-sm text-gray-800 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm">
+              {{ (fila.progreso?.porcentaje ?? 0) === 100 ? 'Completado' : 'En progreso' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="p-5 flex flex-col flex-1">
+          <span class="text-[10px] font-bold text-secondary uppercase tracking-wider">{{ fila.curso?.categoria }}</span>
+          <h3 class="text-lg font-bold text-primary mt-1 leading-snug line-clamp-2">{{ fila.curso?.titulo }}</h3>
+
+          <div class="flex items-center gap-3 mt-2 text-xs text-gray-500">
+            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span>{{ fila.curso?.duracion || 'Sin duración' }}</span>
+            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">signal_cellular_alt</span>{{ fila.curso?.nivel }}</span>
+          </div>
+
+          <div class="mt-4">
+            <div class="flex items-center justify-between text-xs font-semibold text-gray-600 mb-1.5">
+              <span>{{ fila.progreso?.leccionesCompletadas ?? 0 }} de {{ fila.progreso?.totalLecciones ?? 0 }} lecciones</span>
+              <span>{{ fila.progreso?.porcentaje ?? 0 }}%</span>
+            </div>
+            <div class="h-2 rounded-full bg-surface-container overflow-hidden">
+              <div class="h-full rounded-full bg-secondary transition-all duration-500" [style.width.%]="fila.progreso?.porcentaje ?? 0"></div>
+            </div>
+          </div>
+
+          <a [routerLink]="['/curso', fila.inscripcion.cursoId]"
+             class="mt-4 w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-container text-white text-sm font-semibold py-3 rounded-lg transition-colors">
+            {{ textoBoton(fila) }}
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+</div>

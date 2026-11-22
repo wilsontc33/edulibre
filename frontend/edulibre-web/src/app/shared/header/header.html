@@ -1,5 +1,5 @@
 <header class="fixed top-0 left-0 right-0 z-40 bg-surface-container-lowest/90 backdrop-blur-xl shadow-sm h-20">
-  <div class="max-w-7xl mx-auto px-8 h-full flex items-center justify-between">
+  <div class="page-container h-full flex items-center justify-between">
     <!-- Logo -->
     <div class="flex items-center gap-4">
       <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-lg shadow-sm">EL</div>
@@ -27,16 +27,42 @@
       </button>
       } @else {
       <!-- Menú de Usuario (Si HAY sesión) -->
-      <div class="flex items-center gap-4">
-        <a routerLink="/perfil" class="flex items-center gap-2 hover:bg-gray-50 px-3 py-1.5 rounded-lg transition-colors border border-gray-200">
+      <div class="relative">
+        @if (menuAbierto()) {
+          <button class="fixed inset-0 z-40 cursor-default" aria-label="Cerrar menú" (click)="cerrarMenu()"></button>
+        }
+        <button (click)="toggleMenu()"
+                [attr.aria-expanded]="menuAbierto()"
+                aria-haspopup="true"
+                aria-label="Menú de cuenta"
+                class="relative z-50 flex items-center gap-2 hover:bg-gray-50 px-3 py-1.5 rounded-lg transition-colors border border-gray-200">
           <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
             {{ authService.usuarioActual()?.nombre?.charAt(0) }}
           </div>
-          <span class="text-sm font-semibold text-gray-700 hidden sm:block">Mi Panel</span>
-        </a>
-        <button (click)="logout()" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors" title="Cerrar Sesión">
-          <span class="material-symbols-outlined text-[20px]">logout</span>
+          <span class="text-sm font-semibold text-gray-700 hidden sm:block">{{ authService.isAdmin() ? 'Admin' : 'Mi Panel' }}</span>
+          <span class="material-symbols-outlined text-[20px] text-gray-500">expand_more</span>
         </button>
+
+        @if (menuAbierto()) {
+          <div class="absolute right-0 top-full mt-2 z-50 w-64 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-primary/5 py-2">
+            <div class="px-4 py-3 border-b border-gray-100">
+              <p class="text-sm font-bold text-on-surface truncate">{{ authService.usuarioActual()?.nombre }}</p>
+              <p class="text-xs text-outline truncate">{{ authService.usuarioActual()?.email }}</p>
+            </div>
+            <a [routerLink]="authService.isAdmin() ? '/admin' : '/perfil'"
+               (click)="cerrarMenu()"
+               class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-on-surface hover:bg-surface-low transition-colors">
+              <span class="material-symbols-outlined text-[20px]">{{ authService.isAdmin() ? 'space_dashboard' : 'dashboard' }}</span>
+              {{ authService.isAdmin() ? 'Panel Admin' : 'Mi Panel' }}
+            </a>
+            <div class="my-1 border-t border-gray-100"></div>
+            <button (click)="logout()"
+                    class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-error hover:bg-red-50 transition-colors">
+              <span class="material-symbols-outlined text-[20px]">logout</span>
+              Cerrar Sesión
+            </button>
+          </div>
+        }
       </div>
       }
     </div>

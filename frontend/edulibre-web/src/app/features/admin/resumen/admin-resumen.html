@@ -1,0 +1,97 @@
+<div class="py-10">
+
+  <app-page-header eyebrow="Administración" titulo="Resumen general" subtitulo="Estado actual de postulaciones y catálogo."></app-page-header>
+
+  @if (error()) {
+    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p class="text-sm text-gray-500">Cargando el resumen...</p>
+  }
+
+  @if (!cargando() && !error()) {
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white rounded-2xl border border-gray-100 p-5">
+        <div class="w-10 h-10 rounded-xl bg-yellow-100 text-yellow-700 flex items-center justify-center mb-3"><span class="material-symbols-outlined">assignment</span></div>
+        <p class="text-3xl font-bold text-primary">{{ pendientes().length }}</p>
+        <p class="text-xs text-gray-500 mt-1">Postulaciones pendientes</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 p-5">
+        <div class="w-10 h-10 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center mb-3"><span class="material-symbols-outlined">check_circle</span></div>
+        <p class="text-3xl font-bold text-primary">{{ aprobadas().length }}</p>
+        <p class="text-xs text-gray-500 mt-1">Aprobadas</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 p-5">
+        <div class="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center mb-3"><span class="material-symbols-outlined">cancel</span></div>
+        <p class="text-3xl font-bold text-primary">{{ rechazadas().length }}</p>
+        <p class="text-xs text-gray-500 mt-1">Rechazadas</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 p-5">
+        <div class="w-10 h-10 rounded-xl bg-surface-container text-primary flex items-center justify-center mb-3"><span class="material-symbols-outlined">school</span></div>
+        <p class="text-3xl font-bold text-primary">{{ cursosPublicados() }}</p>
+        <p class="text-xs text-gray-500 mt-1">Cursos publicados</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
+      <div class="bg-white rounded-2xl border border-gray-100 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-bold text-primary">Postulaciones recientes</h2>
+          <a routerLink="/admin/postulaciones" class="text-xs font-bold text-secondary hover:underline">Ver todas →</a>
+        </div>
+        <div class="divide-y divide-gray-100">
+          @for (solicitud of recientes(); track solicitud.id) {
+            <div class="flex items-center gap-3 py-3">
+              <div class="w-9 h-9 rounded-full bg-primary-container text-white flex items-center justify-center text-[11px] font-bold">
+                {{ solicitud.nombre.charAt(0) }}
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-bold text-gray-800 truncate">{{ solicitud.nombre }}</p>
+                <p class="text-xs text-gray-500 truncate">{{ solicitud.curso }}</p>
+              </div>
+              <span class="shrink-0 text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">Pendiente</span>
+            </div>
+          } @empty {
+            <p class="text-sm text-gray-500 py-6 text-center">No hay postulaciones pendientes.</p>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
+          <h2 class="text-base font-bold text-primary mb-4">Cursos más inscritos</h2>
+          <ul class="space-y-3">
+            @for (curso of populares(); track curso.id) {
+              <li>
+                <div class="flex items-center justify-between gap-2 text-xs mb-1.5">
+                  <span class="font-semibold text-gray-800 truncate">{{ curso.titulo }}</span>
+                  <span class="font-bold text-primary">{{ curso.totalInscritos }}</span>
+                </div>
+                <div class="h-1.5 rounded-full bg-surface-container overflow-hidden">
+                  <div class="h-full rounded-full bg-secondary" [style.width.%]="curso.totalInscritos > 0 && populares()[0].totalInscritos > 0 ? (curso.totalInscritos / populares()[0].totalInscritos) * 100 : 0"></div>
+                </div>
+              </li>
+            } @empty {
+              <li class="text-sm text-gray-500">Aún no hay inscripciones.</li>
+            }
+          </ul>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
+          <h2 class="text-base font-bold text-primary mb-3">Acciones rápidas</h2>
+          <div class="space-y-2">
+            <a routerLink="/admin/postulaciones" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-surface-low text-sm font-semibold text-primary hover:bg-surface-container transition-colors">
+              <span class="material-symbols-outlined text-[20px]">fact_check</span>
+              Revisar postulaciones pendientes
+            </a>
+            <a routerLink="/admin/cursos/nuevo" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-surface-low text-sm font-semibold text-primary hover:bg-surface-container transition-colors">
+              <span class="material-symbols-outlined text-[20px]">add_circle</span>
+              Agregar un nuevo curso
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -37,9 +37,17 @@
 }
 
 @layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
+
   body {
     @apply bg-surface text-on-surface font-body antialiased;
   }
+}
+
+@utility page-container {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
 }
 
 .modal-overlay-custom {

@@ -7,11 +7,12 @@ import { Usuario } from '../../../core/models/usuario';
 import { UsuarioService } from '../../../core/services/usuario';
 import { AuthService } from '../../../core/services/auth';
 import { extraerMensajeError } from '../../../core/interceptors/error.interceptor';
+import { PageHeader } from '../../../shared/page-header/page-header';
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeader],
   templateUrl: './perfil.html'
 })
 export class Perfil implements OnInit {

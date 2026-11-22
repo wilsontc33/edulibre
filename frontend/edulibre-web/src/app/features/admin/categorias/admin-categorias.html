@@ -1,0 +1,77 @@
+<div class="py-10">
+
+  <app-page-header eyebrow="Administración" titulo="Categorías" subtitulo="Crea las categorías que organizan el catálogo de cursos.">
+    <a routerLink="/admin/cursos" class="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+      Ver cursos
+      <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+    </a>
+  </app-page-header>
+
+  @if (error()) {
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ error() }}</div>
+  }
+
+  @if (mensaje()) {
+    <div class="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{{ mensaje() }}</div>
+  }
+
+  <div class="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-6">
+
+    <section class="bg-white rounded-2xl border border-gray-100 p-6">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <h2 class="text-lg font-bold text-primary">Categorías actuales
+          <span class="ml-2 text-xs font-extrabold bg-surface-low text-primary px-2 py-0.5 rounded-full align-middle">{{ categoriasFiltradas().length }}</span>
+        </h2>
+        <div class="relative w-44 md:w-56">
+          <span class="material-symbols-outlined absolute left-3 top-2.5 text-gray-400 text-[18px]">search</span>
+          <input type="text" [ngModel]="filtro()" (ngModelChange)="filtro.set($event)" placeholder="Buscar..." class="w-full pl-9 pr-3 py-2 bg-surface-low border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary" />
+        </div>
+      </div>
+
+      @if (cargando()) {
+        <p class="text-sm text-gray-500">Cargando categorías...</p>
+      }
+
+      @if (!cargando()) {
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          @for (categoria of categoriasFiltradas(); track categoria.id) {
+            <div class="flex items-center gap-3 border border-gray-100 rounded-xl px-4 py-3 hover:border-gray-200 transition-colors">
+              <div class="w-10 h-10 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined">category</span>
+              </div>
+              <div class="min-w-0">
+                <p class="text-sm font-bold text-primary truncate">{{ categoria.nombre }}</p>
+                <p class="text-[11px] text-gray-500 truncate font-mono">/{{ categoria.slug }}</p>
+              </div>
+            </div>
+          } @empty {
+            <p class="text-sm text-gray-500 col-span-full py-6 text-center">No se encontraron categorías.</p>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="bg-white rounded-2xl border border-gray-100 p-6">
+      <h2 class="text-lg font-bold text-primary">Nueva categoría</h2>
+      <p class="text-xs text-gray-500 mt-1">El slug se genera del nombre y define la URL del filtro en el catálogo.</p>
+
+      <form class="mt-5 space-y-4" (ngSubmit)="crear()">
+        <div>
+          <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1" for="nombre">Nombre</label>
+          <input id="nombre" type="text" maxlength="80" required [ngModel]="nombre()" (ngModelChange)="nombre.set($event)" name="nombre" placeholder="Ej. Robótica y Mecatrónica" class="w-full bg-surface-low px-4 py-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-secondary" />
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1" for="slug">Slug (opcional)</label>
+          <input id="slug" type="text" maxlength="80" [ngModel]="slug()" (ngModelChange)="slug.set(slugificar($event))" name="slug" placeholder="robotica-mecatronica" class="w-full bg-surface-low px-4 py-3 rounded-lg border border-gray-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-secondary" />
+          @if (slugPreview()) {
+            <p class="text-[11px] text-gray-500 mt-1.5">Vista previa: <span class="font-mono text-primary">/{{ slugPreview() }}</span></p>
+          }
+        </div>
+        <button type="submit" [disabled]="guardando()" class="w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-container text-white text-sm font-semibold px-5 py-3 rounded-lg transition-all disabled:opacity-60">
+          <span class="material-symbols-outlined text-[18px]">add_circle</span>
+          {{ guardando() ? 'Creando...' : 'Crear categoría' }}
+        </button>
+      </form>
+    </section>
+  </div>
+</div>

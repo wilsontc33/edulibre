@@ -1,0 +1,82 @@
+<div class="page-container min-h-[calc(100vh-5rem)] flex">
+
+  <aside class="hidden lg:flex w-64 shrink-0 sticky top-20 self-start h-[calc(100vh-5rem)] flex-col border-r border-gray-100 bg-white px-4 py-5 gap-1">
+    <p class="px-3 pb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-gray-400">{{ seccionTitulo() }}</p>
+
+    @for (item of items(); track item.path) {
+      <a [routerLink]="item.path"
+         routerLinkActive="bg-secondary-container text-on-secondary-container font-bold"
+         [routerLinkActiveOptions]="{ exact: item.exact }"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-low transition-colors">
+        <span class="material-symbols-outlined text-[20px]">{{ item.icon }}</span>
+        {{ item.label }}
+      </a>
+    }
+
+    <div class="mt-auto border-t border-gray-100 pt-4">
+      <div class="flex items-center gap-3 px-2">
+        <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">
+          {{ authService.usuarioActual()?.nombre?.charAt(0) }}
+        </div>
+        <div class="min-w-0">
+          <p class="text-[13px] font-bold text-on-surface truncate">{{ authService.usuarioActual()?.nombre }}</p>
+          <p class="text-[11px] text-outline truncate">{{ authService.usuarioActual()?.email }}</p>
+        </div>
+      </div>
+      <button (click)="logout()" class="mt-2 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-error hover:bg-red-50 transition-colors">
+        <span class="material-symbols-outlined text-[20px]">logout</span>
+        Cerrar Sesión
+      </button>
+    </div>
+  </aside>
+
+  @if (drawerOpen()) {
+    <button aria-label="Cerrar menú" class="fixed inset-0 z-40 bg-primary/40 backdrop-blur-[2px]" (click)="cerrarDrawer()"></button>
+    <aside class="fixed top-0 left-0 z-50 h-full w-72 bg-white shadow-2xl flex flex-col px-4 py-5 gap-1">
+      <div class="flex items-center justify-between px-2 pb-3 border-b border-gray-100">
+        <span class="text-lg font-bold text-primary tracking-tight">EduLibre</span>
+        <button aria-label="Cerrar menú" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors" (click)="cerrarDrawer()">
+          <span class="material-symbols-outlined text-[22px]">close</span>
+        </button>
+      </div>
+
+      <p class="px-3 pt-2 pb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-gray-400">{{ seccionTitulo() }}</p>
+
+      @for (item of items(); track item.path) {
+        <a [routerLink]="item.path"
+           routerLinkActive="bg-secondary-container text-on-secondary-container font-bold"
+           [routerLinkActiveOptions]="{ exact: item.exact }"
+           class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-low transition-colors">
+          <span class="material-symbols-outlined text-[20px]">{{ item.icon }}</span>
+          {{ item.label }}
+        </a>
+      }
+
+      <div class="mt-auto border-t border-gray-100 pt-4">
+        <div class="flex items-center gap-3 px-2">
+          <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">
+            {{ authService.usuarioActual()?.nombre?.charAt(0) }}
+          </div>
+          <div class="min-w-0">
+            <p class="text-[13px] font-bold text-on-surface truncate">{{ authService.usuarioActual()?.nombre }}</p>
+            <p class="text-[11px] text-outline truncate">{{ authService.usuarioActual()?.email }}</p>
+          </div>
+        </div>
+        <button (click)="logout()" class="mt-2 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-error hover:bg-red-50 transition-colors">
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+          Cerrar Sesión
+        </button>
+      </div>
+    </aside>
+  }
+
+  <button class="lg:hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-2xl bg-primary text-white shadow-lg flex items-center justify-center"
+          aria-label="Abrir menú del panel"
+          (click)="toggleDrawer()">
+    <span class="material-symbols-outlined text-[26px]">{{ drawerOpen() ? 'close' : 'menu' }}</span>
+  </button>
+
+  <main class="flex-1 min-w-0 lg:pl-8">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -50,7 +50,11 @@ export class CursoDetalle implements OnInit {
   nuevaCalificacion = signal(5);
   nuevoComentario = signal('');
 
-  esAprobado = computed(() => this.curso()?.estadoInscripcion === 'APROBADA');
+  esAprobado = computed(() =>
+    this.authService.isAdmin() || this.curso()?.estadoInscripcion === 'APROBADA');
+
+  puedeCompletar = computed(() =>
+    !this.authService.isAdmin() && this.curso()?.estadoInscripcion === 'APROBADA');
 
   ngOnInit() {
     const cursoId = this.route.snapshot.paramMap.get('id');
@@ -68,8 +72,10 @@ export class CursoDetalle implements OnInit {
           this.curso.set({ ...detalle, lecciones: [] });
           this.cargarResenas(cursoId);
 
-          if (detalle.estadoInscripcion === 'APROBADA') {
-            this.cargarContenidoAprobado(cursoId);
+          this.cargarLecciones(cursoId);
+
+          if (!this.authService.isAdmin() && detalle.estadoInscripcion === 'APROBADA') {
+            this.cargarProgreso(cursoId);
           }
         },
         error: (err) => this.error.set(extraerMensajeError(err))
@@ -93,7 +99,7 @@ export class CursoDetalle implements OnInit {
   }
 
   completarLeccion(leccion: Leccion) {
-    if (!this.esAprobado() || this.estaCompletada(leccion.id)) {
+    if (!this.puedeCompletar() || this.estaCompletada(leccion.id)) {
       return;
     }
 
@@ -154,20 +160,22 @@ export class CursoDetalle implements OnInit {
       });
   }
 
-  private cargarContenidoAprobado(cursoId: string) {
+  private cargarLecciones(cursoId: string) {
     this.cursoService.lecciones(cursoId).subscribe({
       next: (lecciones) => {
         this.curso.update((curso) =>
           curso ? { ...curso, lecciones } : curso
         );
 
-        if (lecciones.length > 0) {
+        if (lecciones.length > 0 && this.esAprobado()) {
           this.seleccionarLeccion(lecciones[0]);
         }
       },
       error: (err) => this.errorLecciones.set(extraerMensajeError(err))
     });
+  }
 
+  private cargarProgreso(cursoId: string) {
     this.progresoService.obtener(cursoId).subscribe({
       next: (progreso) => this.progreso.set(progreso),
       error: (err) => this.errorLecciones.set(extraerMensajeError(err))

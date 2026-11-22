@@ -1,0 +1,17 @@
+<div class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+  <div class="flex items-center gap-3">
+    <ng-content select="[pageLeading]"></ng-content>
+    <div class="min-w-0">
+      @if (eyebrow()) {
+        <span class="text-[11px] font-bold text-secondary uppercase tracking-[0.14em]">{{ eyebrow() }}</span>
+      }
+      <h1 class="text-2xl md:text-3xl font-bold text-primary" [class.mt-1]="eyebrow()">{{ titulo() }}</h1>
+      @if (subtitulo()) {
+        <p class="text-sm text-gray-600 mt-1">{{ subtitulo() }}</p>
+      }
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-3">
+    <ng-content></ng-content>
+  </div>
+</div>

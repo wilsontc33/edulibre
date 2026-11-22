@@ -1,9 +1,6 @@
-<div class="max-w-7xl mx-auto py-10 px-4">
+<div class="py-10">
 
-  <div class="mb-6">
-    <h1 class="text-2xl font-bold text-primary">Panel de Administración</h1>
-    <p class="text-gray-500">Revisa las postulaciones y resuelve las solicitudes de admisión.</p>
-  </div>
+  <app-page-header eyebrow="Administración" titulo="Postulaciones" subtitulo="Revisa las postulaciones y resuelve las solicitudes de admisión."></app-page-header>
 
   <div class="flex items-center gap-2 mb-4">
     @for (estado of estados; track estado) {
@@ -51,7 +48,7 @@
         <td class="p-4">
           <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-semibold uppercase">{{ solicitud.nivel }}</span>
         </td>
-        <td class="p-4 text-sm text-gray-500 max-w-xs truncate">{{ solicitud.motivacion }}</td>
+        <td class="p-4 text-sm text-gray-500 max-w-[20rem] truncate">{{ solicitud.motivacion }}</td>
         <td class="p-4 text-right space-x-2">
           @if (solicitud.estado === 'PENDIENTE') {
             <button

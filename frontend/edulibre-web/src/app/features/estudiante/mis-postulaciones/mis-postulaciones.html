@@ -1,10 +1,6 @@
-<div class="max-w-6xl mx-auto py-10 px-4">
+<div class="py-10">
 
-  <!-- Encabezado -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-primary">Mis Postulaciones</h1>
-    <p class="text-gray-600 mt-2">Revisa el estado de tus solicitudes de admisión y accede a tus cursos aprobados.</p>
-  </div>
+  <app-page-header eyebrow="Mi Cuenta" titulo="Mis Postulaciones" subtitulo="Revisa el estado de tus solicitudes de admisión y accede a tus cursos aprobados."></app-page-header>
 
   @if (error()) {
     <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ error() }}</div>

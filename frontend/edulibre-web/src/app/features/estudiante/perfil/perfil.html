@@ -1,4 +1,6 @@
-<div class="max-w-5xl mx-auto py-10 px-4">
+<div class="py-10">
+
+  <app-page-header eyebrow="Mi Cuenta" titulo="Mi Perfil" subtitulo="Administra tu información personal."></app-page-header>
 
   <!-- Cabecera del Perfil -->
   <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-6">
@@ -65,27 +67,4 @@
     </div>
   }
 
-  <!-- Tarjetas de acceso rápido -->
-  <h2 class="text-lg font-bold text-primary mb-4">Mi Actividad</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-    <!-- Tarjeta: Mis Postulaciones -->
-    <a routerLink="/mis-postulaciones" class="group bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-secondary transition-all">
-      <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-        <span class="material-symbols-outlined">assignment</span>
-      </div>
-      <h3 class="text-xl font-bold text-primary mb-2">Mis Postulaciones</h3>
-      <p class="text-sm text-gray-500">Revisa el estado de tus solicitudes de admisión y accede a tus cursos aprobados.</p>
-    </a>
-
-    <!-- Tarjeta: Catálogo -->
-    <a routerLink="/cursos" class="group bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-secondary transition-all">
-      <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-        <span class="material-symbols-outlined">explore</span>
-      </div>
-      <h3 class="text-xl font-bold text-primary mb-2">Explorar Cursos</h3>
-      <p class="text-sm text-gray-500">Descubre nuevos cursos gratuitos y envía tu postulación para desbloquear el contenido.</p>
-    </a>
-
-  </div>
 </div>

@@ -5,6 +5,7 @@ import { finalize } from 'rxjs/operators';
 import { EstadoInscripcion } from '../../../core/models/inscripcion';
 import { InscripcionService } from '../../../core/services/inscripcion';
 import { extraerMensajeError } from '../../../core/interceptors/error.interceptor';
+import { PageHeader } from '../../../shared/page-header/page-header';
 
 interface PostulacionVista {
   id: string;
@@ -18,7 +19,7 @@ interface PostulacionVista {
 @Component({
   selector: 'app-mis-postulaciones',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageHeader],
   templateUrl: './mis-postulaciones.html'
 })
 export class MisPostulaciones implements OnInit {

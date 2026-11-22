@@ -1,15 +1,15 @@
 @if (cargando()) {
-  <div class="max-w-7xl mx-auto py-8 px-4 text-sm text-gray-500">Cargando curso...</div>
+  <div class="page-container py-10 text-sm text-gray-500">Cargando curso...</div>
 }
 
 @if (error()) {
-  <div class="max-w-7xl mx-auto py-8 px-4">
+  <div class="page-container py-10">
     <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ error() }}</div>
   </div>
 }
 
 @if (curso(); as c) {
-<div class="max-w-7xl mx-auto py-8 px-4">
+<div class="page-container py-10">
 
   <!-- Breadcrumb -->
   <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
@@ -54,7 +54,7 @@
 
       <!-- Reproductor de Video -->
       <div class="bg-gray-900 rounded-2xl overflow-hidden aspect-video relative shadow-xl">
-        @if (c.estadoInscripcion === 'APROBADA' && urlVideoSegura()) {
+        @if (esAprobado() && urlVideoSegura()) {
         <iframe
           class="w-full h-full"
           [src]="urlVideoSegura()"
@@ -71,7 +71,7 @@
             <span class="material-symbols-outlined text-[32px]">lock</span>
           </div>
           <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Contenido bloqueado</h3>
-          <p class="text-gray-300 max-w-md mb-6">Debes enviar tu postulación y ser aceptado por el administrador para acceder a las clases en video.</p>
+          <p class="text-gray-300 max-w-[28rem] mb-6">Debes enviar tu postulación y ser aceptado por el administrador para acceder a las clases en video.</p>
           <a routerLink="/" class="bg-secondary hover:bg-[#005049] text-white px-6 py-2.5 rounded-lg font-semibold transition-all">
             Ir a Postular
           </a>
@@ -79,7 +79,7 @@
         }
       </div>
 
-      @if (c.estadoInscripcion === 'APROBADA' && progreso(); as p) {
+      @if (puedeCompletar() && progreso(); as p) {
       <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-2">
           <h3 class="font-bold text-primary">Tu progreso</h3>
@@ -98,7 +98,7 @@
       }
 
       <!-- Info de la lección activa -->
-      @if (c.estadoInscripcion === 'APROBADA' && leccionActiva()) {
+      @if (esAprobado() && leccionActiva()) {
       <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <h2 class="text-xl font-bold text-primary mb-2">{{ leccionActiva()?.titulo }}</h2>
         <p class="text-gray-600 text-sm">Duración: {{ leccionActiva()?.duracion }}</p>
@@ -197,12 +197,12 @@
           @for (leccion of c.lecciones; track leccion.id; let i = $index) {
 
           <div
-            (click)="c.estadoInscripcion === 'APROBADA' ? seleccionarLeccion(leccion) : null"
+            (click)="esAprobado() ? seleccionarLeccion(leccion) : null"
             class="group relative flex items-start gap-3 p-3 rounded-lg transition-all"
             [ngClass]="{
-                  'bg-gray-50 cursor-not-allowed opacity-70': c.estadoInscripcion !== 'APROBADA',
-                  'hover:bg-surface-container cursor-pointer': c.estadoInscripcion === 'APROBADA' && leccionActiva()?.id !== leccion.id,
-                  'bg-secondary-container/30 border border-secondary/20': leccionActiva()?.id === leccion.id && c.estadoInscripcion === 'APROBADA'
+                  'bg-gray-50 cursor-not-allowed opacity-70': !esAprobado(),
+                  'hover:bg-surface-container cursor-pointer': esAprobado() && leccionActiva()?.id !== leccion.id,
+                  'bg-secondary-container/30 border border-secondary/20': leccionActiva()?.id === leccion.id && esAprobado()
                 }">
 
             <!-- Número de lección -->
@@ -221,8 +221,10 @@
             </div>
 
             <!-- Estado de la lección -->
-            @if (c.estadoInscripcion !== 'APROBADA') {
+            @if (!esAprobado()) {
             <span class="material-symbols-outlined text-gray-400 text-[18px] shrink-0">lock</span>
+            } @else if (!puedeCompletar()) {
+            <span class="material-symbols-outlined text-gray-300 text-[18px] shrink-0">play_circle</span>
             } @else if (estaCompletada(leccion.id)) {
             <span class="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
             } @else {

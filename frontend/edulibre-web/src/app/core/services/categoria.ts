@@ -4,12 +4,22 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Categoria } from '../models/categoria';
 
+export interface CategoriaRequest {
+  nombre: string;
+  slug?: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CategoriaService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/categorias`;
+  private readonly adminUrl = `${environment.apiBaseUrl}/admin/categorias`;
 
   listar(): Observable<Categoria[]> {
     return this.http.get<Categoria[]>(this.apiUrl);
+  }
+
+  crear(request: CategoriaRequest): Observable<Categoria> {
+    return this.http.post<Categoria>(this.adminUrl, request);
   }
 }
