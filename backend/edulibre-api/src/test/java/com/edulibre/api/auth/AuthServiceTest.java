@@ -59,12 +59,13 @@ class AuthServiceTest {
         });
         when(jwtService.generateToken(any(), eq("ESTUDIANTE"), eq("Nuevo"))).thenReturn("jwt");
 
-        AuthResponse response = authService.register(
+        AuthService.AuthResultado resultado = authService.register(
                 new RegisterRequest("Nuevo", "nuevo@edulibre.com", "secreto123"));
 
-        assertEquals("jwt", response.token());
-        assertEquals("nuevo@edulibre.com", response.email());
-        assertEquals("ESTUDIANTE", response.rol());
+        assertEquals("jwt", resultado.token());
+        assertEquals("jwt", resultado.response().token());
+        assertEquals("nuevo@edulibre.com", resultado.response().email());
+        assertEquals("ESTUDIANTE", resultado.response().rol());
         verify(usuarioRepository).save(argThat(usuario ->
                 usuario.getRol() == Rol.ESTUDIANTE && "hash".equals(usuario.getPassword())));
     }
@@ -91,10 +92,10 @@ class AuthServiceTest {
         when(usuarioRepository.findByEmail("ana@edulibre.com")).thenReturn(Optional.of(usuario));
         when(jwtService.generateToken(any(), eq("ESTUDIANTE"), eq("Ana"))).thenReturn("jwt-ana");
 
-        AuthResponse response = authService.login(new LoginRequest("ana@edulibre.com", "secreto123"));
+        AuthService.AuthResultado resultado = authService.login(new LoginRequest("ana@edulibre.com", "secreto123"));
 
-        assertEquals("jwt-ana", response.token());
-        assertEquals("Ana", response.nombre());
+        assertEquals("jwt-ana", resultado.token());
+        assertEquals("Ana", resultado.response().nombre());
         verify(authenticationManager).authenticate(any());
     }
 }

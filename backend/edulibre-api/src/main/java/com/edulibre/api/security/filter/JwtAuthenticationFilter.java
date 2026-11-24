@@ -1,5 +1,6 @@
 package com.edulibre.api.security.filter;
 
+import com.edulibre.api.security.jwt.AuthCookieService;
 import com.edulibre.api.security.jwt.JwtService;
 import com.edulibre.api.security.service.CustomUserDetailsService;
 import io.jsonwebtoken.JwtException;
@@ -26,18 +27,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private final AuthCookieService authCookieService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String token = extraerToken(request);
 
-        if (authorization == null || !authorization.startsWith(BEARER_PREFIX)) {
+        if (token == null || token.isBlank()) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        String token = authorization.substring(BEARER_PREFIX.length());
 
         try {
             String email = jwtService.extractUsername(token);
@@ -55,5 +55,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String extraerToken(HttpServletRequest request) {
+        return authCookieService.extraerToken(request)
+                .orElseGet(() -> {
+                    String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+                    if (authorization == null || !authorization.startsWith(BEARER_PREFIX)) {
+                        return null;
+                    }
+                    return authorization.substring(BEARER_PREFIX.length());
+                });
     }
 }

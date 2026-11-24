@@ -1,0 +1,68 @@
+<footer class="bg-primary-container text-on-primary-container">
+  <div class="page-container py-16 lg:py-16">
+    <div class="grid grid-cols-1 gap-12 md:grid-cols-2 xl:grid-cols-[360px_1fr_1fr_1fr] xl:gap-12">
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-[10px] bg-secondary-fixed">
+            <span class="material-symbols-outlined text-[22px] text-on-secondary-fixed">menu_book</span>
+          </div>
+          <span class="font-headline text-[22px] font-bold text-white">EduLibre</span>
+        </div>
+        <p class="max-w-[360px] text-sm leading-relaxed text-on-primary-container">
+          Plataforma de cursos gratuitos. Postula en 2 minutos y accede al campus virtual.
+        </p>
+        <div class="flex items-center gap-2 pt-1">
+          <a href="https://edulibre.org" aria-label="Sitio web" class="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20">
+            <span class="material-symbols-outlined text-[18px]">language</span>
+          </a>
+          <a href="mailto:contacto@edulibre.org" aria-label="Correo" class="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20">
+            <span class="material-symbols-outlined text-[18px]">mail</span>
+          </a>
+          <a href="https://github.com" aria-label="Código" class="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20">
+            <span class="material-symbols-outlined text-[18px]">code</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <p class="font-headline text-[13px] font-bold uppercase tracking-[0.04em] text-secondary-fixed">Explorar</p>
+        <nav class="flex flex-col gap-4 text-sm">
+          <a routerLink="/" class="text-on-primary-container transition-colors hover:text-white">Inicio</a>
+          <a routerLink="/cursos" class="text-on-primary-container transition-colors hover:text-white">Explorar Cursos</a>
+          <a routerLink="/" fragment="como-funciona" class="text-on-primary-container transition-colors hover:text-white">¿Cómo funciona?</a>
+          <a routerLink="/" fragment="formulario-inscripcion" class="text-on-primary-container transition-colors hover:text-white">Postularme</a>
+        </nav>
+      </div>
+
+      <div class="space-y-4">
+        <p class="font-headline text-[13px] font-bold uppercase tracking-[0.04em] text-secondary-fixed">Mi cuenta</p>
+        <nav class="flex flex-col gap-4 text-sm">
+          @if (!authService.isLoggedIn()) {
+            <button type="button" (click)="abrirLogin()" class="text-left text-on-primary-container transition-colors hover:text-white">Iniciar Sesión</button>
+          } @else {
+            <a [routerLink]="authService.isAdmin() ? '/admin' : '/perfil'" class="text-on-primary-container transition-colors hover:text-white">{{ authService.isAdmin() ? 'Panel Admin' : 'Mi Panel' }}</a>
+          }
+          <a routerLink="/mis-postulaciones" class="text-on-primary-container transition-colors hover:text-white">Mis Postulaciones</a>
+          <a routerLink="/mis-cursos" class="text-on-primary-container transition-colors hover:text-white">Mis Cursos</a>
+          <a routerLink="/mi-progreso" class="text-on-primary-container transition-colors hover:text-white">Mi Progreso</a>
+        </nav>
+      </div>
+
+      <div class="space-y-4">
+        <p class="font-headline text-[13px] font-bold uppercase tracking-[0.04em] text-secondary-fixed">Plataforma</p>
+        <nav class="flex flex-col gap-4 text-sm">
+          <a routerLink="/admin" class="text-on-primary-container transition-colors hover:text-white">Panel Admin</a>
+          <a routerLink="/admin/cursos" class="text-on-primary-container transition-colors hover:text-white">Gestionar Cursos</a>
+          <a routerLink="/admin/categorias" class="text-on-primary-container transition-colors hover:text-white">Categorías</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="mt-12 border-t border-white/10 pt-8">
+      <div class="flex flex-col gap-4 text-xs text-on-primary-container sm:flex-row sm:items-center sm:justify-between">
+        <p>© {{ year }} EduLibre. Cursos gratuitos para todos.</p>
+        <p>Plataforma Educativa · Iberoamérica</p>
+      </div>
+    </div>
+  </div>
+</footer>

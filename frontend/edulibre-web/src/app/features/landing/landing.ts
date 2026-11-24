@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { Categoria } from '../../core/models/categoria';
 import { CursoResumen } from '../../core/models/curso';
@@ -15,7 +16,7 @@ import { extraerMensajeError } from '../../core/interceptors/error.interceptor';
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './landing.html'
 })
 export class Landing implements OnInit {
@@ -26,18 +27,46 @@ export class Landing implements OnInit {
   private readonly authModalService = inject(AuthModalService);
   public readonly authService = inject(AuthService);
 
-  postulacionForm: FormGroup;
-  mostrarExito = signal(false);
-  cargando = signal(false);
-  cargandoCursos = signal(true);
-  error = signal<string | null>(null);
-  categorias = signal<Categoria[]>([]);
-  categoriaSeleccionada = signal('TODOS');
-  cursos = signal<CursoResumen[]>([]);
-  categoriasConTodas = computed(() => [
+  readonly postulacionForm: FormGroup;
+  readonly mostrarExito = signal(false);
+  readonly cargando = signal(false);
+  readonly cargandoCursos = signal(true);
+  readonly error = signal<string | null>(null);
+  readonly categorias = signal<Categoria[]>([]);
+  readonly categoriaSeleccionada = signal('TODOS');
+  readonly cursos = signal<CursoResumen[]>([]);
+  readonly categoriasConTodas = computed(() => [
     { id: 'todas', nombre: 'TODOS', slug: 'TODOS' },
     ...this.categorias()
   ]);
+
+  readonly pasos = [
+    {
+      numero: '01',
+      icono: 'person_add',
+      titulo: 'Crea tu cuenta gratuita',
+      descripcion: 'Sin tarjetas de crédito ni costos ocultos. Regístrate en menos de 30 segundos y accede instantáneamente a todo nuestro ecosistema pedagógico.',
+      pieIcono: 'bolt',
+      pieTexto: 'Acceso en 30 segundos'
+    },
+    {
+      numero: '02',
+      icono: 'menu_book',
+      titulo: 'Aprende a tu propio ritmo',
+      descripcion: 'Proyectos prácticos interactivos, retos reales basados en el mercado y lecciones audiovisuales de alta producción disponibles 24/7.',
+      pieIcono: 'schedule',
+      pieTexto: 'Flexibilidad 100% asíncrona'
+    },
+    {
+      numero: '03',
+      icono: 'workspace_premium',
+      titulo: 'Obtén tu certificación',
+      descripcion: 'Valida tus competencias tecnológicas con credenciales digitales verificables mediante código criptográfico. Impulsa tu CV y perfil de LinkedIn.',
+      pieIcono: 'share',
+      pieTexto: 'Insignias integrables a LinkedIn'
+    }
+  ] as const;
+
   private postulacionPendiente = signal<CrearInscripcionRequest | null>(null);
 
   constructor() {
@@ -47,7 +76,8 @@ export class Landing implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       nivelPrevio: ['', Validators.required],
       horasSemana: [null, [Validators.required, Validators.min(1), Validators.max(80)]],
-      motivacion: ['', [Validators.required, Validators.minLength(20)]]
+      motivacion: ['', [Validators.required, Validators.minLength(20)]],
+      aceptaTerminos: [false, Validators.requiredTrue]
     });
 
     effect(() => {
@@ -72,6 +102,10 @@ export class Landing implements OnInit {
   ngOnInit() {
     this.cargarCategorias();
     this.cargarCursos();
+  }
+
+  abrirRegistro() {
+    this.authModalService.abrirModal('registro');
   }
 
   filtrarPorSlug(slug: string) {
@@ -107,6 +141,11 @@ export class Landing implements OnInit {
     this.enviarAlBackend(request);
   }
 
+  controlInvalido(nombre: string): boolean {
+    const control = this.postulacionForm.get(nombre);
+    return !!control && control.invalid && (control.touched || control.dirty);
+  }
+
   private enviarAlBackend(request: CrearInscripcionRequest) {
     this.cargando.set(true);
     this.error.set(null);
@@ -121,7 +160,11 @@ export class Landing implements OnInit {
           this.postulacionForm.reset({
             cursoId: '',
             nombreCompleto: usuario?.nombre ?? '',
-            email: usuario?.email ?? ''
+            email: usuario?.email ?? '',
+            nivelPrevio: '',
+            horasSemana: null,
+            motivacion: '',
+            aceptaTerminos: false
           });
           setTimeout(() => this.mostrarExito.set(false), 6000);
         },

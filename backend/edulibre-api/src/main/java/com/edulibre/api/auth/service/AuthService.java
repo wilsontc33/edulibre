@@ -27,8 +27,11 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    public record AuthResultado(String token, AuthResponse response) {
+    }
+
     @Transactional
-    public AuthResponse register(RegisterRequest request) {
+    public AuthResultado register(RegisterRequest request) {
         String email = request.email().trim().toLowerCase();
         if (usuarioRepository.existsByEmail(email)) {
             throw new ConflictException("El email ya está registrado");
@@ -45,7 +48,7 @@ public class AuthService {
         return buildAuthResponse(usuario);
     }
 
-    public AuthResponse login(LoginRequest request) {
+    public AuthResultado login(LoginRequest request) {
         String email = request.email().trim().toLowerCase();
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, request.password()));
@@ -56,13 +59,13 @@ public class AuthService {
         return buildAuthResponse(usuario);
     }
 
-    private AuthResponse buildAuthResponse(Usuario usuario) {
+    private AuthResultado buildAuthResponse(Usuario usuario) {
         UserDetails userDetails = User.withUsername(usuario.getEmail())
                 .password(usuario.getPassword())
                 .roles(usuario.getRol().name())
                 .build();
 
         String token = jwtService.generateToken(userDetails, usuario.getRol().name(), usuario.getNombre());
-        return new AuthResponse(token, usuario.getEmail(), usuario.getNombre(), usuario.getRol().name());
+        return new AuthResultado(token, new AuthResponse(token, usuario.getEmail(), usuario.getNombre(), usuario.getRol().name()));
     }
 }

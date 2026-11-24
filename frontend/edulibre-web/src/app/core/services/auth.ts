@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, tap } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth';
 import { Usuario } from '../models/usuario';
@@ -10,76 +10,74 @@ import { Usuario } from '../models/usuario';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/auth`;
-  private readonly tokenKey = 'edulibre_token';
   private readonly userKey = 'edulibre_user';
 
-  usuarioActual = signal<AuthResponse | null>(this.leerUsuarioGuardado());
-  isLoggedIn = computed(() => this.usuarioActual() !== null);
-  isAdmin = computed(() => this.usuarioActual()?.rol === 'ADMIN');
+  readonly usuarioActual = signal<AuthResponse | null>(this.leerUsuarioGuardado());
+  readonly isLoggedIn = computed(() => this.usuarioActual() !== null);
+  readonly isAdmin = computed(() => this.usuarioActual()?.rol === 'ADMIN');
 
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${this.apiUrl}/login`, request)
+      .post<AuthResponse>(`${this.apiUrl}/login`, request, { withCredentials: true })
       .pipe(tap((response) => this.guardarSesion(response)));
   }
 
   register(request: RegisterRequest): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${this.apiUrl}/register`, request)
+      .post<AuthResponse>(`${this.apiUrl}/register`, request, { withCredentials: true })
       .pipe(tap((response) => this.guardarSesion(response)));
   }
 
   me(): Observable<Usuario> {
     return this.http
-      .get<Usuario>(`${this.apiUrl}/me`)
+      .get<Usuario>(`${this.apiUrl}/me`, { withCredentials: true })
       .pipe(tap((usuario) => this.actualizarDatosUsuario(usuario)));
   }
 
   refrescarSesion(): Observable<Usuario | null> {
-    if (!this.getToken()) {
-      return of(null);
-    }
-
     return this.me().pipe(
       catchError(() => {
-        this.logout();
+        this.limpiarSesionLocal();
         return of(null);
       })
     );
   }
 
   actualizarDatosUsuario(usuario: Usuario): void {
-    const actual = this.usuarioActual();
-    const token = actual?.token ?? this.getToken();
-
-    if (!token) {
-      return;
-    }
-
-    const actualizado: AuthResponse = {
-      token,
-      email: usuario.email,
-      nombre: usuario.nombre,
-      rol: usuario.rol
-    };
+    const actualizado = this.aSesion(usuario);
     sessionStorage.setItem(this.userKey, JSON.stringify(actualizado));
     this.usuarioActual.set(actualizado);
   }
 
-  getToken(): string | null {
-    return sessionStorage.getItem(this.tokenKey);
+  logout(): void {
+    this.http
+      .post<void>(`${this.apiUrl}/logout`, {}, { withCredentials: true })
+      .pipe(
+        catchError(() => of(void 0)),
+        finalize(() => this.limpiarSesionLocal())
+      )
+      .subscribe();
   }
 
-  logout(): void {
-    sessionStorage.removeItem(this.tokenKey);
+  limpiarSesionLocal(): void {
     sessionStorage.removeItem(this.userKey);
+    sessionStorage.removeItem('edulibre_token');
     this.usuarioActual.set(null);
   }
 
   private guardarSesion(response: AuthResponse): void {
-    sessionStorage.setItem(this.tokenKey, response.token);
-    sessionStorage.setItem(this.userKey, JSON.stringify(response));
-    this.usuarioActual.set(response);
+    const sesion = this.aSesion(response);
+    sessionStorage.setItem(this.userKey, JSON.stringify(sesion));
+    sessionStorage.removeItem('edulibre_token');
+    this.usuarioActual.set(sesion);
+  }
+
+  private aSesion(datos: AuthResponse | Usuario): AuthResponse {
+    return {
+      email: datos.email,
+      nombre: datos.nombre,
+      rol: datos.rol
+    };
   }
 
   private leerUsuarioGuardado(): AuthResponse | null {
@@ -89,7 +87,12 @@ export class AuthService {
     }
 
     try {
-      return JSON.parse(guardado) as AuthResponse;
+      const datos = JSON.parse(guardado) as Partial<AuthResponse>;
+      if (!datos.email || !datos.nombre || !datos.rol) {
+        sessionStorage.removeItem(this.userKey);
+        return null;
+      }
+      return { email: datos.email, nombre: datos.nombre, rol: datos.rol };
     } catch {
       sessionStorage.removeItem(this.userKey);
       return null;

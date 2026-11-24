@@ -1,10 +1,10 @@
 export type Rol = 'ADMIN' | 'ESTUDIANTE';
 
 export interface AuthResponse {
-  token: string;
+  token?: string | null;
   email: string;
   nombre: string;
-  rol: Rol;
+  rol: 'ESTUDIANTE' | 'ADMIN';
 }
 
 export interface LoginRequest {

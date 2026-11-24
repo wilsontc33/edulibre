@@ -13,6 +13,11 @@ spring:
     properties:
       hibernate:
         format_sql: false
+  mail:
+    host: localhost
+    port: 2525
+    username: test
+    password: test
 
 jwt:
   secret: test-secret-key-123456789012345678901234567890
@@ -21,3 +26,7 @@ jwt:
 app:
   cors:
     allowed-origins: http://localhost:4200
+  mail:
+    from: no-reply@edulibre.test
+    from-name: EduLibre Test
+    frontend-url: http://localhost:4200
