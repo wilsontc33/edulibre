@@ -9,6 +9,8 @@ import com.edulibre.api.inscripcion.dto.InscripcionResponse;
 import com.edulibre.api.inscripcion.entity.Inscripcion;
 import com.edulibre.api.inscripcion.repository.InscripcionRepository;
 import com.edulibre.api.inscripcion.service.InscripcionService;
+import com.edulibre.api.notificacion.config.NotificacionProperties;
+import com.edulibre.api.notificacion.event.InscripcionResueltaEvent;
 import com.edulibre.api.security.service.CurrentUserService;
 import com.edulibre.api.shared.exception.ConflictException;
 import com.edulibre.api.shared.util.EstadoInscripcion;
@@ -16,16 +18,20 @@ import com.edulibre.api.shared.util.Rol;
 import com.edulibre.api.usuario.entity.Usuario;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +45,12 @@ class InscripcionServiceTest {
 
     @Mock
     private CurrentUserService currentUserService;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private NotificacionProperties notificacionProperties;
 
     @InjectMocks
     private InscripcionService inscripcionService;
@@ -114,10 +126,48 @@ class InscripcionServiceTest {
         when(inscripcionRepository.findById("insc-1")).thenReturn(Optional.of(inscripcion));
         when(inscripcionRepository.save(any(Inscripcion.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        when(notificacionProperties.getFrontendUrl()).thenReturn("http://localhost:4200");
 
         AdminInscripcionResponse response = inscripcionService.rechazar("insc-1", "Sin cupos");
 
         assertEquals("RECHAZADA", response.estado());
         assertEquals("Sin cupos", response.comentarioAdmin());
+
+        ArgumentCaptor<InscripcionResueltaEvent> captor =
+                ArgumentCaptor.forClass(InscripcionResueltaEvent.class);
+        verify(eventPublisher).publishEvent(captor.capture());
+        assertEquals(EstadoInscripcion.RECHAZADA, captor.getValue().estado());
+        assertEquals("Sin cupos", captor.getValue().comentarioAdmin());
+        assertEquals("http://localhost:4200/mis-postulaciones", captor.getValue().enlace());
+    }
+
+    @Test
+    void aprobarPublicaEventoDeResultado() {
+        Inscripcion inscripcion = Inscripcion.builder()
+                .id("insc-1")
+                .usuario(usuario)
+                .curso(curso)
+                .estado(EstadoInscripcion.PENDIENTE)
+                .nivelPrevio("Básico")
+                .motivacion("Quiero aprender")
+                .build();
+        when(inscripcionRepository.findById("insc-1")).thenReturn(Optional.of(inscripcion));
+        when(inscripcionRepository.save(any(Inscripcion.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(notificacionProperties.getFrontendUrl()).thenReturn("http://localhost:4200/");
+
+        inscripcionService.aprobar("insc-1");
+
+        ArgumentCaptor<InscripcionResueltaEvent> captor =
+                ArgumentCaptor.forClass(InscripcionResueltaEvent.class);
+        verify(eventPublisher).publishEvent(captor.capture());
+
+        InscripcionResueltaEvent evento = captor.getValue();
+        assertEquals("ana@edulibre.com", evento.email());
+        assertEquals("Ana", evento.nombrePostulante());
+        assertEquals("Desarrollo Web", evento.cursoTitulo());
+        assertEquals(EstadoInscripcion.APROBADA, evento.estado());
+        assertNull(evento.comentarioAdmin());
+        assertEquals("http://localhost:4200/mis-postulaciones", evento.enlace());
     }
 }

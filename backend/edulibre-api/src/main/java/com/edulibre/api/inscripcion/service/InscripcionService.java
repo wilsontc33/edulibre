@@ -7,12 +7,15 @@ import com.edulibre.api.inscripcion.dto.CrearInscripcionRequest;
 import com.edulibre.api.inscripcion.dto.InscripcionResponse;
 import com.edulibre.api.inscripcion.entity.Inscripcion;
 import com.edulibre.api.inscripcion.repository.InscripcionRepository;
+import com.edulibre.api.notificacion.config.NotificacionProperties;
+import com.edulibre.api.notificacion.event.InscripcionResueltaEvent;
 import com.edulibre.api.security.service.CurrentUserService;
 import com.edulibre.api.shared.exception.ConflictException;
 import com.edulibre.api.shared.exception.ResourceNotFoundException;
 import com.edulibre.api.shared.util.EstadoInscripcion;
 import com.edulibre.api.usuario.entity.Usuario;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,8 @@ public class InscripcionService {
     private final InscripcionRepository inscripcionRepository;
     private final CursoRepository cursoRepository;
     private final CurrentUserService currentUserService;
+    private final ApplicationEventPublisher eventPublisher;
+    private final NotificacionProperties notificacionProperties;
 
     @Transactional
     public InscripcionResponse crear(CrearInscripcionRequest request) {
@@ -86,7 +91,27 @@ public class InscripcionService {
         inscripcion.setEstado(nuevoEstado);
         inscripcion.setComentarioAdmin(comentarioAdmin);
         inscripcion.setResueltoEn(LocalDateTime.now());
-        return inscripcionRepository.save(inscripcion);
+        Inscripcion guardada = inscripcionRepository.save(inscripcion);
+        publicarResultado(guardada);
+        return guardada;
+    }
+
+    private void publicarResultado(Inscripcion inscripcion) {
+        eventPublisher.publishEvent(new InscripcionResueltaEvent(
+                inscripcion.getUsuario().getEmail(),
+                inscripcion.getUsuario().getNombre(),
+                inscripcion.getCurso().getTitulo(),
+                inscripcion.getEstado(),
+                inscripcion.getComentarioAdmin(),
+                enlacePostulaciones()));
+    }
+
+    private String enlacePostulaciones() {
+        String base = notificacionProperties.getFrontendUrl();
+        if (base == null || base.isBlank()) {
+            return "/mis-postulaciones";
+        }
+        return (base.endsWith("/") ? base.substring(0, base.length() - 1) : base) + "/mis-postulaciones";
     }
 
     private InscripcionResponse toResponse(Inscripcion inscripcion) {
